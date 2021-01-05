@@ -1,22 +1,45 @@
 import discord
 from discord.ext import commands
-
+import pandas as pd
+import numpy as np
+import time
+import datetime
+from datetime import datetime, timedelta
+import seaborn as sns
+import time,sys,os,warnings
+pd.set_option("display.max_rows",500)
+pd.set_option("display.max_columns",500)
+bold='\33[1m'
+# x=pd.read_csv("test.csv")
+dict={}
+# print(x.shape)
 client = commands.Bot(command_prefix="#")
+command_entered=[]
 
-f = open("rules.txt","r")
-rules=f.readlines()
+fb = open("rules.txt","r")
+rules=fb.readlines()
 filtered_word=["cat","dog","tushar","love","relationship","crush"]
 
 @client.event
 async def on_ready():
     print("Bot is ready")
     
-@client.event
-async def on_message(msg):
-    for word in filtered_word:
-        if word in msg.content:
-            await msg.delete()
-    await client.process_commands(msg)
+# @client.event
+# async def on_message(msg):
+#     for word in filtered_word:
+#         if word in msg.content:
+#             await msg.delete()
+#     await client.process_commands(msg)
+#     command_entered.append(msg.content) 
+#     for i in range(0,len(command_entered),2):        
+#         dict[command_entered[i]]=command_entered[i+1]
+#         print(dict)
+
+#     f= open('new_test.csv','a',encoding="utf-8") 
+#     for key in dict.keys():
+#         f.write("%s,%s\n"%(key,dict[key]))
+
+    
 
 @client.event
 async def on_command_error(ctx,error):
@@ -138,10 +161,62 @@ async def whois(ctx,member:discord.Member):
     for i in range(0,len(member.roles)-1):    
         await ctx.send(members_list[i])
 
+# @client.command()
+# async def size(ctx):
+#     x=pd.read_csv("test.csv")
+#     await ctx.send(x.shape[0])
 
 
 @client.command()
 async def emoji(ctx):
     await ctx.send("❤️‍🔥")
 
-client.run("Nzg3OTE4ODEzMTg1NzAzOTc2.X9b8kw.0TESoIve4pMu8PPljtffIKcPz9Y")
+@client.command()
+@commands.has_permissions(kick_members=True)
+async def zoom(ctx,time,link,*,reason):
+    
+    time_for_meeting=pd.to_datetime(time)
+    time_for_meeting_hour = time_for_meeting.hour
+    time_for_meeting_minute = time_for_meeting.minute
+    time_for_meeting_second = time_for_meeting.second
+    
+    time_now=datetime.now()
+    time_now_hour=time_now.hour
+    time_now_minute=time_now.minute
+    time_now_second=time_now.second
+
+    no_of_hour_left= time_now_hour - time_for_meeting_hour 
+    no_of_second_left= time_now_second -time_for_meeting_second
+    no_of_minute_left= time_now_minute -time_for_meeting_minute
+
+    # if time_now_minute < time_for_meeting_minute:
+    #     no_of_hour_left -= no_of_hour_left
+
+
+    await ctx.send(f"No of Hours left-->->{no_of_hour_left}")
+    await ctx.send(f"No of minutes left-->->{no_of_minute_left}")
+    await ctx.send(f"No of second left-->->{no_of_second_left}")
+    
+    # await ctx.send(f"Time Left For Meeting-->{time_left_for_meeting}")
+
+    embed=discord.Embed(
+        title="Team Meeting",
+        description=f":pushpin:     Meeting Time -> {time}    \n \n   :pushpin:     Meeting Place -> {link}  \n \n :pushpin:     Meeting Reason -> {reason}  \n " ,
+        url="https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/51/85/dc/5185dccd-337f-65e5-6aec-bcf34c7aaff3/source/512x512bb.jpg",
+        color=discord.Color.blue()
+        )
+     
+    embed.set_author(name=ctx.author.name,icon_url=ctx.author.avatar_url)    
+    embed.set_thumbnail(url="https://is5-ssl.mzstatic.com/image/thumb/Purple124/v4/51/85/dc/5185dccd-337f-65e5-6aec-bcf34c7aaff3/source/512x512bb.jpg")    
+    embed.set_footer(text="IT Department , THT Technologies")    
+
+    await ctx.send(embed=embed) 
+    # await ctx.message.delete()   
+
+
+
+
+
+
+
+client.run("Nzg3OTE4ODEzMTg1NzAzOTc2.X9b8kw.XTArnuVTDb5D9mFQ39IMVfdYEj4")
